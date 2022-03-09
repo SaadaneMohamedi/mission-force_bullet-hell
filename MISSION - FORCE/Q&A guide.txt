@@ -1,0 +1,50 @@
+Q1: How do I open the game?
+A1: Easy, go over to the game files and double click on game.html.
+The game should then open in your default browser and voilà!
+
+Q2: The game isn't showing properly. The bottom part is cut off.
+A2: Yeah, I didn't figure out how to fix that. Works properly
+on Chrome, but other browsers like Opera GX might not display it
+properly. You can zoom the page out a bit (I found 80% works on most)
+and it'll show alright. Sorry about that. Also sorry about your ears,
+music volume is another thing I wasn't able to figure out Xb.
+
+Q2.5: I meant nothing is loading properly. I can't see anything other
+than the text.
+A2.5: OHHHH, ok. Waiting 5 secs/reloading the page should fix that,
+since that happening means the page is still loading. If both don't
+work, keep realoding the page and it eventually will, I apologize.
+
+Q3: How does the game work?
+A3: It's a bullet hell similar to the Touhou series.
+You can control you spaceship around in a spacerift
+to dodge enemy fire. Your spaceship isn't your weak
+point, a small red circle over it is. If that gets
+hit, the game ends. Of course, you can shoot back at
+the enemy spaceship. And the game ends when it is
+destroyed. You can also try and aim for highest score,
+since I also used classic arcade top-down view shooters,
+like Galaga and Vasara, as inspiration.
+
+Q4: Why are there anime girls in the main menu screen
+if I can't even play as them?
+A4: That, my friend, is because I like anime girls.
+(But also because if you press the button that matches
+with the icon that's on top of one of them, their game's theme
+will play when you start a game. Otherwise, read the sentence before)
+
+Q5: What is the lore of this game?
+A5: I am sad to announce that I never thought of it prior to
+writing this .txt. But, I will try and make up one on the spot.
+Ahem. ''A powerful menace has set Earth to be its next target.
+Fortunately, your job as a RangeR is to vow protection of your
+homeland and courageously defend it, whatever the cost. But during
+MISSION: FORCE, your whole fleet got wipped out by a ZXATS, one of
+the biggest enemy ships to exist in the RangeR's archives. You are now
+alone against an all-mighty foe and now, your only goal is to destroy it.''
+Hope that works, because I have no better or even other ideas :b.
+
+This is all for now. Don't forget to have fun, get your tryhard pants on
+and enjoy the game!
+
+-ZeBisu

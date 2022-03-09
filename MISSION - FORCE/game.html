@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <title>MISSION: FORCE</title>
+    <style>
+        canvas {
+            padding-left: 0;
+            padding-right: 0;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+            border: 1px solid black;
+            cursor: pointer;
+            background: url("a1/paysageMenu.png");
+        };
+    </style>
+</head>
+<body>
+    <h2>Game made by: ZeBisu (Twitter: @Ze_Bisu)</h2>
+    <h2>All visual and sound assets used are not mine unless specified. Credits goes to the creators of Touhou, Ginga Force, Leauge of Legends, Kaiji and others.</h2>
+
+    <h2>WARNING: The following game contains sporadic flashing images that may cause discomfort and/or trigger seizures and/or migraines for people with photosensitve epilepsy. Safety comes before playing!</h2>
+    <canvas width="800" height="900"></canvas>
+    <script>
+        let leCanvas = document.querySelector("canvas");
+        let ctx = leCanvas.getContext("2d");
+
+        let vaisseau = {
+            img: new Image(),
+            urlImage: "a1/vaisseau.png",
+            x: 0,
+            y: 0,
+            largeur: 100,
+            hauteur: 97,
+            vitesseX: 4,
+            vitesseY: 4
+        };
+
+        vaisseau.img.src = vaisseau.urlImage;
+        vaisseau.x = (leCanvas.width - vaisseau.largeur)/2;
+        vaisseau.y = (leCanvas.height - vaisseau.hauteur) - (vaisseau.hauteur/2);
+
+        let ptFaible = {
+            img: new Image(),
+            urlImage: "a1/ptFaible.png",
+            x: (vaisseau.x + 100/2) - 20/2,
+            y: vaisseau.y + 60,
+            largeur: 14,
+            hauteur: 14
+        };
+
+        ptFaible.img.src = ptFaible.urlImage;
+
+        let vaisseauBoss = {
+            img: new Image(),
+            urlImage: "a1/vaisseauBoss.png",
+            x: 0,
+            y: 0,
+            largeur: 799,
+            hauteur: 432,
+            ptsVies: 7500
+        }
+
+        vaisseauBoss.img.src = vaisseauBoss.urlImage
+
+        let lesTirs = []
+        let lesTirsBoss = []
+
+        let score = 0;
+        let finJeu = false;
+        let debutJeu = false;
+
+        let fleches = {
+            gauche: false,
+            droite: false,
+            haut: false,
+            bas: false
+        };
+
+        let tirtouches = {
+            regulier: false
+        };
+        
+        let sonAmbiance = new Audio("a2/musiqueJeu.mp3");
+        let sonAmbiance2 = new Audio("a2/musiqueJeu2.mp3");
+        let sonVictoire = new Audio("a2/musiqueVictoire.mp3");
+        let sonDéfaite = new Audio("a2/musiqueDéfaite.mp3");
+
+        ctx.font = "bold 25px Calibri"
+        ctx.fillStyle = "black"
+        ctx.textAlign = "center"
+        ctx.textBaseline = "middle"
+        ctx.fillText("Game created by @Ze_Bisu", leCanvas.width/2, 30)
+
+        ctx.font = "bold 150px Calibri"
+        ctx.fillStyle = "#960050"
+        ctx.textAlign = "center"
+        ctx.textBaseline = "middle"
+        ctx.fillText("MISSION:", leCanvas.width/2, (leCanvas.height/2 - 50))
+
+        ctx.font = "bold 70px Calibri"
+        ctx.fillStyle = "white"
+        ctx.textAlign = "center"
+        ctx.textBaseline = "middle"
+        ctx.fillText("FOR  E", leCanvas.width/2, (leCanvas.height/2 + 50))
+
+        ctx.font = "bold 70px Calibri"
+        ctx.fillStyle = "#960050"
+        ctx.textAlign = "center"
+        ctx.textBaseline = "middle"
+        ctx.fillText("      C ", leCanvas.width/2 + 1.5, (leCanvas.height/2 + 50))
+
+        ctx.font = "bold 40px Calibri"
+        ctx.fillStyle = "white"
+        ctx.textAlign = "center"
+        ctx.textBaseline = "middle"
+        ctx.fillText("Your goal: Survive", leCanvas.width/2, (leCanvas.height - 220))
+
+        ctx.font = "bold 35px Calibri"
+        ctx.fillStyle = "#960050"
+        ctx.textAlign = "center"
+        ctx.textBaseline = "middle"
+        ctx.fillText("the enemy ship's attacks and take him down", leCanvas.width/2, (leCanvas.height - 180))
+
+        ctx.font = "bold 20px Calibri"
+        ctx.fillStyle = "cyan"
+        ctx.textAlign = "center"
+        ctx.textBaseline = "middle"
+        ctx.fillText("Use the arroes or WASD to naviagte around", leCanvas.width/2, (leCanvas.height - 130))
+
+        ctx.font = "bold 20px Calibri"
+        ctx.fillStyle = "white"
+        ctx.textAlign = "center"
+        ctx.textBaseline = "middle"
+        ctx.fillText("and Z or P to shoot", leCanvas.width/2, (leCanvas.height - 110))
+
+        ctx.font = "bold 20px Calibri"
+        ctx.fillStyle = "#960050"
+        ctx.textAlign = "center"
+        ctx.textBaseline = "middle"
+        ctx.fillText("Your central core is your weak point.", leCanvas.width/2, (leCanvas.height - 80))
+
+        ctx.font = "bold 20px Calibri"
+        ctx.fillStyle = "white"
+        ctx.textAlign = "center"
+        ctx.textBaseline = "middle"
+        ctx.fillText("Good luck, Ranger!", leCanvas.width/2, (leCanvas.height - 60))
+
+        ctx.font = "bold 30px Calibri"
+        ctx.fillStyle = "cyan"
+        ctx.textAlign = "center"
+        ctx.textBaseline = "middle"
+        ctx.fillText("Press on one of the permitted buttons to start", leCanvas.width/2, (leCanvas.height - 25))
+
+        document.addEventListener("keydown", commencerJeuTouhou);
+        document.addEventListener("keydown", commencerJeuGingaForce);
+
+        function commencerJeuTouhou(event) {
+                if (debutJeu == false && event.keyCode == 32) {
+                    demmarerJeu();
+
+                    leCanvas.style.backgroundImage = "url('a1/paysageJeu.jpg')";
+
+                    debutJeu = true;
+
+                    sonAmbiance.loop = true;
+                    sonAmbiance.play();
+                };
+        };
+
+        function commencerJeuGingaForce(event) {
+                if (debutJeu == false && event.keyCode == 13) {
+                    demmarerJeu();
+
+                    leCanvas.style.backgroundImage = "url('a1/paysageJeu.jpg')";
+
+                    debutJeu = true;
+
+                    sonAmbiance2.loop = true;
+                    sonAmbiance2.play();
+                };
+        };
+        
+        function demmarerJeu() {
+            let intervalJeuID = setInterval(actualiserLeJeu, 1000/60);
+            let intervalTirVaisseau = setInterval(mettreUnTirVaisseau, 1000/10);
+            let intervalTirBoss = setInterval(mettreUnTirBoss, 1000/15);
+            let intervalScore = setInterval(gérerScore, 1000)
+
+            mettreUnTirVaisseau();
+
+            mettreUnTirBoss();
+
+            document.addEventListener("keydown", presserTouche);
+            document.addEventListener("keyup", relacherTouche);
+            document.addEventListener("keydown", rejouerJeu);
+
+
+            function actualiserLeJeu() {
+                ctx.clearRect(0, 0, leCanvas.width, leCanvas.height);
+
+                deplacerVaisseau();
+
+                générerTirVaisseau();
+
+                générerPtFaible();
+
+                générerBoss();
+
+                générerTirBoss();
+
+                détecterCollisionTirVaisseau();
+
+                détecterCollisionTirBoss();
+
+                gérerScore();
+            };
+
+            function gérerScore() {
+                score += 100
+                
+                ctx.font = "bold 40px Calibri";
+                ctx.fillStyle = "white";
+                ctx.textAlign = "left";
+                ctx.textBaseline = "top";
+                ctx.fillText("Score:" + score, 5, 5)
+
+                if (finJeu == true) {
+                    score += 0
+                    ctx.clearRect(0, 0, leCanvas.width, 150);
+                }
+            };
+
+            function rejouerJeu(event) {
+                if (finJeu == true && event.keyCode == 32) {
+                document.location.reload(commencerJeuTouhou);
+                };
+                if (finJeu == true && event.keyCode == 13) {
+                document.location.reload(commencerJeuGingaForce);
+                }
+            };
+
+            function mettreUnTirVaisseau() {
+                let tir = {
+                            img: new Image(),
+                            urlImage: "a1/tir.png",
+                            x: (vaisseau.x + 100/2) - 25/2,
+                            y: vaisseau.y - 43,
+                            largeur: 25,
+                            hauteur: 43,
+                            vitesseY: lesTirs.vitesseY = 20,
+                            force: 15,
+                        };
+                tir.img.src = tir.urlImage;
+                if (tirtouches.regulier) {
+                    lesTirs.push(tir);   
+                }
+            };
+
+            function mettreUnTirBoss() {
+                let tirBoss = {
+                            img: new Image(),
+                            urlImage: "a1/tirBoss.png",
+                            x: entierHasard(0, leCanvas.width - 42),
+                            y: vaisseauBoss.hauteur - 40,
+                            largeur: 42,
+                            hauteur: 40,
+                            vitesseY: entierHasard(3,7),
+                        };
+                tirBoss.img.src = tirBoss.urlImage;
+                lesTirsBoss.push(tirBoss);
+            };
+
+            function générerTirBoss() {
+                for (let unTirBoss of lesTirsBoss) {
+                    unTirBoss.y += unTirBoss.vitesseY;
+                    
+                    ctx.drawImage(unTirBoss.img, unTirBoss.x, unTirBoss.y);
+
+                    if (unTirBoss.y > leCanvas.height) {
+                        let index = lesTirsBoss.indexOf(unTirBoss);
+                        lesTirsBoss.splice(index, 1);
+                    };
+                };
+            };
+            
+            function entierHasard(nbMin, nbMax) {
+                let intervalle = nbMax - nbMin;
+                return nbMin + Math.round((Math.random() * intervalle));
+            };
+
+            function générerBoss() {
+                ctx.drawImage(vaisseauBoss.img, vaisseauBoss.x, vaisseauBoss.y);
+            };
+
+            function générerPtFaible() {
+                ctx.drawImage(ptFaible.img, ptFaible.x, ptFaible.y);
+            }
+
+            function deplacerVaisseau() {
+                if (fleches.droite) {
+                    vaisseau.x += vaisseau.vitesseX;
+                    ptFaible.x += vaisseau.vitesseX;
+                };
+                if (fleches.gauche) {
+                    vaisseau.x -= vaisseau.vitesseX;
+                    ptFaible.x -= vaisseau.vitesseX;
+                };
+                if (fleches.haut) {
+                    vaisseau.y += vaisseau.vitesseY;
+                    ptFaible.y += vaisseau.vitesseY;
+                };
+                if (fleches.bas) {
+                    vaisseau.y -= vaisseau.vitesseY;
+                    ptFaible.y -= vaisseau.vitesseY;
+                };
+                let xMax = leCanvas.width - vaisseau.largeur;
+                if (vaisseau.x > xMax) {
+                    vaisseau.x = xMax;
+                    ptFaible.x = (leCanvas.width - 100/2) - 20/2;
+                };
+                if (vaisseau.x < 0) {
+                    vaisseau.x = 0;
+                    ptFaible.x = 100/2 - 20/2;
+                };
+
+                let yMax = leCanvas.height - vaisseau.hauteur;
+                if (vaisseau.y > yMax) {
+                    vaisseau.y = yMax;
+                    ptFaible.y = leCanvas.height - (97-60);
+                };
+                if (vaisseau.y < vaisseauBoss.hauteur) {
+                    vaisseau.y = vaisseauBoss.hauteur;
+                    ptFaible.y = vaisseauBoss.hauteur + 60;
+                };
+
+                ctx.drawImage(vaisseau.img, vaisseau.x, vaisseau.y);
+            ;}
+
+            function générerTirVaisseau() {
+                    for (let unTir of lesTirs) {
+                        unTir.y -= unTir.vitesseY;
+
+                        ctx.drawImage(unTir.img, unTir.x, unTir.y);
+
+                        if (unTir.y < -43) {
+                            let index = lesTirs.indexOf(unTir);
+                            lesTirs.splice(index, 1);
+                        };
+                    };
+            };
+
+            function presserTouche(event) {
+
+                event.preventDefault();
+
+                if (event.keyCode == 39 || event.keyCode == 68) {
+                    fleches.droite = true;
+                };
+                if (event.keyCode == 37 || event.keyCode == 65) {
+                    fleches.gauche = true;
+                };
+                if (event.keyCode == 40 || event.keyCode == 83) {
+                    fleches.haut = true;
+                };
+                if (event.keyCode == 38 || event.keyCode == 87) {
+                    fleches.bas = true;
+                };
+
+                if (event.keyCode == 90 || event.keyCode == 80) {
+                    tirtouches.regulier = true;
+                };
+            };
+
+            function relacherTouche(event) {
+
+                event.preventDefault();
+
+                if (event.keyCode == 39 || event.keyCode == 68) {
+                    fleches.droite = false;
+                };
+                if (event.keyCode == 37 || event.keyCode == 65) {
+                    fleches.gauche = false;
+                };
+                if (event.keyCode == 40 || event.keyCode == 83) {
+                    fleches.haut = false;
+                };
+                if (event.keyCode == 38 || event.keyCode == 87) {
+                    fleches.bas = false;
+                };
+
+                if (event.keyCode == 90 || event.keyCode == 80) {
+                    tirtouches.regulier = false;
+                };
+            };
+
+            function détecterCollisionTirVaisseau() {
+                for(let unTir of lesTirs){
+                    let siCollisionTirEtBoss = detecterCollision(vaisseauBoss, unTir);
+                    if (siCollisionTirEtBoss == true) {
+                        vaisseauBoss.img.src = "a1/vaisseauBossHit.png"
+                        let index = lesTirs.indexOf(unTir);
+                        lesTirs.splice(index, 1);
+                        vaisseauBoss.ptsVies -= unTir.force;
+                        score += 1
+                    } else {
+                        vaisseauBoss.img.src = "a1/vaisseauBoss.png"
+                    }
+
+                    console.log(vaisseauBoss.ptsVies)
+
+                    if (vaisseauBoss.ptsVies == 0 || vaisseauBoss.ptsVies < 0) {
+                        ctx.clearRect(0,0, leCanvas.width, leCanvas.height);
+                        sonAmbiance.pause()
+                        sonVictoire.loop = true;
+                        sonVictoire.play();
+                        finJeu = true;
+                        ctx.font = "bold 100px Calibri";
+                        ctx.fillStyle = "#c46cf8";
+                        ctx.textAlign = "center";
+                        ctx.textBaseline = "middle";
+                        ctx.fillText("Score:" + score, leCanvas.width/2, (leCanvas.height/2 + 90));
+                        ctx.font = "bold 30px Calibri"
+                        ctx.fillStyle = "#c46cf8"
+                        ctx.textAlign = "center"
+                        ctx.textBaseline = "middle"
+                        ctx.fillText("Press SPACE or ENTER to restart", leCanvas.width/2, (leCanvas.height - 25))
+                        leCanvas.style.backgroundImage = "url('a1/finJeuVictoire.png')";
+                        clearInterval(intervalJeuID);
+                        clearInterval(intervalTirVaisseau);
+                        clearInterval(intervalTirBoss);
+                        break;
+                    };
+                };
+            };
+
+            function détecterCollisionTirBoss() {
+                for(let unTirBoss of lesTirsBoss){
+                    let siCollisionTirEtVaisseau = détecterCollision(ptFaible, unTirBoss);
+                    if (siCollisionTirEtVaisseau == true) {
+                        let index = lesTirsBoss.indexOf(unTirBoss);
+                        lesTirsBoss.splice(index, 1);
+                        ctx.clearRect(0,0, leCanvas.width, leCanvas.height);
+                        sonAmbiance.pause();
+                        sonAmbiance2.pause();
+                        sonDéfaite.loop = true;
+                        sonDéfaite.play();
+                        finJeu = true;
+                        ctx.font = "bold 100px Calibri";
+                        ctx.fillStyle = "white";
+                        ctx.textAlign = "center";
+                        ctx.textBaseline = "middle";
+                        ctx.fillText("Score:" + score, leCanvas.width/2, (leCanvas.height/2 + 135));
+                        ctx.font = "bold 30px Calibri"
+                        ctx.fillStyle = "red"
+                        ctx.textAlign = "center"
+                        ctx.textBaseline = "middle"
+                        ctx.fillText("Press SPACE or ENTER to retry", leCanvas.width/2, (leCanvas.height - 25))
+                        ctx.font = "bold 80px Calibri";
+                        ctx.fillStyle = "white";
+                        ctx.textAlign = "center";
+                        ctx.textBaseline = "middle";
+                        ctx.fillText("Try again?", leCanvas.width/2, (leCanvas.height/2 + 15));
+                        leCanvas.style.backgroundImage = "url('a1/finJeuDéfaite.png')";
+                        clearInterval(intervalJeuID);
+                        clearInterval(intervalTirVaisseau);
+                        clearInterval(intervalTirBoss);
+                        break;
+                    };
+                };
+            };
+
+            function detecterCollision(leRectangle, leCercle) {
+            let rayonCercle = leCercle.largeur / 2;
+            let centreX_duCercle = leCercle.x + rayonCercle;
+            let centreY_duCercle = leCercle.y + rayonCercle;
+
+            let coinX = centreX_duCercle;
+            let coinY = centreY_duCercle;
+            if (centreX_duCercle < leRectangle.x) {
+                coinX = leRectangle.x;
+            } else if (centreX_duCercle > leRectangle.x + leRectangle.largeur) {
+                coinX = leRectangle.x + leRectangle.largeur;
+            }
+
+            if (centreY_duCercle < leRectangle.y) {
+                coinY = leRectangle.y;
+            } else if (centreY_duCercle > leRectangle.y + leRectangle.hauteur) {
+                coinY = leRectangle.y + leRectangle.hauteur;
+            }
+
+            let distanceX = centreX_duCercle - coinX;
+            let distanceY = centreY_duCercle - coinY;
+            let distanceXY = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+
+            if (distanceXY <= rayonCercle) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        function détecterCollision(cercle1, cercle2) {
+            let rayonCercle1 = cercle1.largeur / 2;
+            let rayonCercle2 = cercle2.largeur / 2;
+
+            let distanceX = (cercle1.x + rayonCercle1) - (cercle2.x + rayonCercle2);
+
+            let distanceY = (cercle1.y + rayonCercle1) - (cercle2.y + rayonCercle2);
+
+            let distanceXY = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+
+            if (distanceXY < rayonCercle1 + rayonCercle2) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        };
+    </script>
+</body>
+</html>
